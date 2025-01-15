@@ -1,0 +1,34 @@
+http:
+  routers:
+    request-router:
+      rule: "Host(`request.test`)"
+      service: request-service
+      entryPoints:
+        - web
+  services:
+    request-service:
+      loadBalancer:
+        servers:
+          - url: "http://seasoned.schleppe:5000"
+            weight: 100
+        passHostHeader: true
+    mirrored-service:
+      mirroring:
+        service: example-service
+        mirrorBody: true
+        maxBodySize: 1024
+        mirrors:
+        - name: mirror1
+          percent: 10
+          url: http://example.com
+        - name: mirror2
+          percent: 20
+          url: http://example.org
+        healthCheck:
+          service: "request-service"
+
+  middlewares:
+    redirect-to-https:
+      redirectScheme:
+        permanent: false
+        scheme: https
