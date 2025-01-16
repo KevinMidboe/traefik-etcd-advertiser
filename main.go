@@ -5,6 +5,7 @@ import (
 	"log"
 	"os"
 	"strings"
+	"github.com/davecgh/go-spew/spew"
 
 	"github.com/kevinmidboe/traefik-etcd-advertiser/client/etcd"
 	"github.com/kevinmidboe/traefik-etcd-advertiser/config"
@@ -41,14 +42,25 @@ func main() {
 		// build etcd packets from docker-compose config
 		dockerConfig, err := generator.ParseDockerCompose(filename)
 		if err != nil {
-			log.Fatal(err)
+			log.Fatalf("Error loading docker YAML config file :%v\n", err)
 		}
 
-		// generator.PrintLabels(labels)
-		fmt.Println("compose")
-		log.Println(dockerConfig)
-		// generator.TraefikToEtcd(traefikConfig, &packets)
+		generator.DockerToEtcd(dockerConfig, &packets)
 
+	} else if strings.Contains(filename, "deployment") {
+		kubeConfig, err := generator.KubernetesToEtcd(filename)
+		if err != nil {
+			log.Fatalf("Error loading traefik YAML config file: %v\n", err)
+		}
+
+		fmt.Println("kube")
+		fmt.Println(*kubeConfig)
+		fmt.Println(*kubeConfig.Spec.Replicas)
+		fmt.Printf("as: %+v\n", kubeConfig.Spec.Selector.MatchLabels["app"])
+		spew.Dump(*kubeConfig.Sepc.Selector)
+		
+		fmt.Println(kubeConfig.ObjectMeta.Name)
+		fmt.Println(kubeConfig.GetObjectMeta())
 	} else {
 		// build etcd packets from traefik config
 		traefikConfig, err := converter.TraefikFromYaml(filename)
@@ -59,6 +71,7 @@ func main() {
 		generator.TraefikToEtcd(traefikConfig, &packets)
 	}
 
+	etcd.RemoveDuplicatePackets(&packets)
 	for _, packet := range packets {
 		log.Println(packet)
 		// etcdManager.Put(packet.Key, packet.Value)
