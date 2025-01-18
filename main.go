@@ -13,20 +13,13 @@ import (
 	"github.com/kevinmidboe/traefik-etcd-advertiser/generator"
 )
 
-func getArgvFilename() string {
-	if len(os.Args) < 2 {
-		log.Fatalf("Usage: %s <path-to-yaml-file>\n", os.Args[0])
-	}
-
-	filename := os.Args[1]
-	return filename
-}
-
 func main() {
 	_, err := config.LoadConfig()
 	if err != nil {
 		log.Fatalf("Error from config loader: %s", err)
 	}
+
+	filename, publish := config.ParseCli()
 
 	// setup etcd client
 	// etcdManager, err := etcd.NewClient()
@@ -36,8 +29,6 @@ func main() {
 
 	var packets []etcd.EtcdPacket
 
-	// parse traefik config from file
-	filename := getArgvFilename()
 	if strings.Contains(filename, "docker-compose.yml") {
 		// build etcd packets from docker-compose config
 		dockerConfig, err := generator.ParseDockerCompose(filename)
@@ -74,6 +65,9 @@ func main() {
 	etcd.RemoveDuplicatePackets(&packets)
 	for _, packet := range packets {
 		log.Println(packet)
-		// etcdManager.Put(packet.Key, packet.Value)
+
+		if *publish {
+			etcdManager.Put(packet.Key, packet.Value)
+		}
 	}
 }
