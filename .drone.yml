@@ -1,0 +1,38 @@
+---
+kind: pipeline
+type: docker
+name: Build and publish
+
+platform:
+  os: linux
+  arch: amd64
+
+steps:
+- name: Build
+  image: golang
+  commands:
+    - make build
+
+- name: Create release files
+  image: golang
+  commands:
+    - make release
+  when:
+    event: tag
+
+- name: Upload release files
+  image: plugins/github-release
+  settings:
+    api_key:
+      from_secret: GHCR_UPLOAD_TOKEN
+    files: release/*
+    checksum:
+      - sha512
+    draft: true
+  when:
+    event: tag
+---
+kind: signature
+hmac: e35934cf1ba5c663aec6e5cd3204912446cc3b98c7a05d85fbf20d0429577df2
+
+...
