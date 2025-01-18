@@ -25,7 +25,7 @@ func getArgvFilename() string {
 func main() {
 	_, err := config.LoadConfig()
 	if err != nil {
-		log.Println("Error from config loader", err)
+		log.Fatalf("Error from config loader: %s", err)
 	}
 
 	// setup etcd client
