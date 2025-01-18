@@ -1,8 +1,6 @@
 module github.com/kevinmidboe/traefik-etcd-advertiser
 
-go 1.23.0
-
-toolchain go1.23.3
+go 1.23
 
 require (
 	github.com/compose-spec/compose-go/v2 v2.4.7
@@ -13,7 +11,8 @@ require (
 	go.etcd.io/etcd/client/v3 v3.5.17
 	google.golang.org/grpc v1.67.1
 	gopkg.in/yaml.v3 v3.0.1
-	k8s.io/api v0.32.0
+	k8s.io/api v0.32.1
+	k8s.io/client-go v0.32.1
 )
 
 require (
@@ -21,7 +20,6 @@ require (
 	github.com/cenkalti/backoff/v4 v4.3.0 // indirect
 	github.com/coreos/go-semver v0.3.1 // indirect
 	github.com/coreos/go-systemd/v22 v22.5.0 // indirect
-	github.com/davecgh/go-spew v1.1.2-0.20180830191138-d8f796af33cc // indirect
 	github.com/distribution/reference v0.6.0 // indirect
 	github.com/docker/go-connections v0.5.0 // indirect
 	github.com/docker/go-units v0.5.0 // indirect
@@ -88,7 +86,7 @@ require (
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20241209162323-e6fa225c2576 // indirect
 	google.golang.org/protobuf v1.35.2 // indirect
 	gopkg.in/inf.v0 v0.9.1 // indirect
-	k8s.io/apimachinery v0.32.0 // indirect
+	k8s.io/apimachinery v0.32.1 // indirect
 	k8s.io/klog/v2 v2.130.1 // indirect
 	k8s.io/utils v0.0.0-20241104100929-3ea5e8cea738 // indirect
 	sigs.k8s.io/json v0.0.0-20241010143419-9aa6b5e7a4b3 // indirect
