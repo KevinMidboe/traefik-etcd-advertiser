@@ -1,11 +1,8 @@
 package main
 
 import (
-	"fmt"
 	"log"
-	"os"
 	"strings"
-	"github.com/davecgh/go-spew/spew"
 
 	"github.com/kevinmidboe/traefik-etcd-advertiser/client/etcd"
 	"github.com/kevinmidboe/traefik-etcd-advertiser/config"
@@ -22,7 +19,7 @@ func main() {
 	filename, publish := config.ParseCli()
 
 	// setup etcd client
-	// etcdManager, err := etcd.NewClient()
+	etcdManager, err := etcd.NewClient()
 	if err != nil {
 		panic(err)
 	}
@@ -38,20 +35,14 @@ func main() {
 
 		generator.DockerToEtcd(dockerConfig, &packets)
 
-	} else if strings.Contains(filename, "deployment") {
-		kubeConfig, err := generator.KubernetesToEtcd(filename)
+	} else if strings.Contains(filename, "kubernetes") {
+		// build etcd packets from kubernetes service resource
+		kubeConfig, err := converter.ServiceToKubernetes(filename)
 		if err != nil {
 			log.Fatalf("Error loading traefik YAML config file: %v\n", err)
 		}
 
-		fmt.Println("kube")
-		fmt.Println(*kubeConfig)
-		fmt.Println(*kubeConfig.Spec.Replicas)
-		fmt.Printf("as: %+v\n", kubeConfig.Spec.Selector.MatchLabels["app"])
-		spew.Dump(*kubeConfig.Sepc.Selector)
-		
-		fmt.Println(kubeConfig.ObjectMeta.Name)
-		fmt.Println(kubeConfig.GetObjectMeta())
+		generator.KubernetesToEtcd(kubeConfig, &packets)
 	} else {
 		// build etcd packets from traefik config
 		traefikConfig, err := converter.TraefikFromYaml(filename)
