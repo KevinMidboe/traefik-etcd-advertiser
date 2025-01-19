@@ -10,18 +10,14 @@ import (
 	"github.com/kevinmidboe/traefik-etcd-advertiser/generator"
 )
 
+var Version = "v0.1-dev"
+
 func main() {
+	filename, publish := config.ParseCli(Version)
+
 	_, err := config.LoadConfig()
 	if err != nil {
 		log.Fatalf("Error from config loader: %s", err)
-	}
-
-	filename, publish := config.ParseCli()
-
-	// setup etcd client
-	etcdManager, err := etcd.NewClient()
-	if err != nil {
-		panic(err)
 	}
 
 	var packets []etcd.EtcdPacket
@@ -58,6 +54,12 @@ func main() {
 		log.Println(packet)
 
 		if *publish {
+			// setup etcd client
+			etcdManager, err := etcd.NewClient()
+			if err != nil {
+				panic(err)
+			}
+
 			etcdManager.Put(packet.Key, packet.Value)
 		}
 	}
