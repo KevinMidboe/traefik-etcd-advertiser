@@ -4,8 +4,7 @@ PROJECT_NAME=$(shell basename $(CURDIR))
 
 APPLICATION_NAME := traefik-etcd-advertiser
 VERSION := $(shell git describe --tags HEAD 2>/dev/null || echo $(DRONE_TAG))
-# PLATFORMS := darwin/amd64 darwin/arm64 linux/amd64 linux/arm linux/arm64 windows/amd64
-PLATFORMS := darwin/arm64 linux/amd64
+PLATFORMS := darwin/amd64 darwin/arm64 linux/amd64 linux/arm linux/arm64 windows/amd64
 
 ## build: build the application
 build: install
@@ -23,7 +22,7 @@ release: install-vendor
 		if [ "$$os" = "darwin" ]; then \
 			os="macOS"; \
 		fi; \
-		output_name="$(APPLICATION_NAME)-$(VERSION)-$$os-$$GOARCH"; \
+		output_name="$(APPLICATION_NAME)-$$os-$$GOARCH"; \
 		if [ "$$os" = "windows" ]; then \
 			output_name+=".exe"; \
 		fi; \
